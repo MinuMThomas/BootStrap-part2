@@ -131,6 +131,11 @@ function fetchGitHubInformation(event) {
             if (errorResponse.status === 404) {
                 $("#gh-user-data").html(
                     `<h2>No info found for user ${username}</h2>`);
+                    //403 means forbidden, when acces denied from github
+            } else if (errorResponse.status === 403) {
+                //x-ratelimit-reset header , provided by github to know when it reset. its presented to as UNIX time stamp
+                var resetTime = new Date(errorResponse.getResponseHeader('X-RateLimit-Reset') * 1000);
+                $("#gh-user-data").html(`<h4>Too many requests, please wait until ${resetTime.toLocaleTimeString()}</h4>`);
             } else {
                 console.log(errorResponse);
                 $("#gh-user-data").html(
